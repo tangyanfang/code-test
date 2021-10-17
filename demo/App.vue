@@ -1,7 +1,6 @@
 <template>
   <div>
-    <TestTable :test="test">
-      <span>xxxxxx</span>
+    <TestTable :table-data="data">
     </TestTable>
   </div>
 </template>
@@ -9,6 +8,7 @@
 <script lang="ts">
 import { TestTable } from '../src/table'
 import { defineComponent, ref } from '@vue/composition-api'
+import { getTestData } from './test_data'
 
 export default defineComponent({
   name: 'App',
@@ -16,9 +16,9 @@ export default defineComponent({
     TestTable,
   },
   setup() {
-    const test = ref(true)
+    const data = ref(getTestData())
 
-    return { test }
+    return { data }
   },
 })
 </script>

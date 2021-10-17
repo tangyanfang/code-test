@@ -26,13 +26,20 @@ export type IxPublicPropTypes<O> = O extends object
   ? { [K in PublicRequiredKeys<O>]: InferPropType<O[K]> } & { [K in PublicOptionalKeys<O>]?: InferPropType<O[K]> }
   : { [K in string]: any }
 
+// export const columnType = {
+//   columnId: Number,
+//   columnTitle: String,
+//   columnValue: String
+// }
 
 // Props 定义在这里
 export const tableProps = {
-  test: {
-    type: Boolean,
-    default: false,
-  },
+  tableData: {
+    type: Array,
+    default: () => {
+      return []
+    }
+  }
 }
 
 export type TablePublicProps = IxPublicPropTypes<typeof tableProps>

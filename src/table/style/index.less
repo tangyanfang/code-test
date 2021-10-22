@@ -1,1 +1,37 @@
 // 表格公共样式
+
+.my-table {
+    border: 1px solid red;
+}
+.my-table-header {
+    border-bottom: 1px solid red;
+    tr {
+        button {
+            background-color: red;
+            padding: 0 4px;
+        }
+    }
+}
+th {
+    border: 1px solid red;
+    padding: 4px;
+}
+.row-content {
+    td {
+        display: inline-block;
+        padding: 4px 16px;
+    }
+}
+.my-table-pager {
+    display: flex;
+    justify-content: flex-end;
+    li {
+        width: 20px;
+        text-align: center;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+    .active {
+        border: 1px solid red;
+    }
+}

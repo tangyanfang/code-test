@@ -1,20 +1,14 @@
-export const contentData = [{
-  columnId: 1,
-  column1: '11',
-  column2: '12',
-  column3: '13',
-  column4: '14',
-  column5: '15',
-  column6: '16',
-}, {
-  columnId: 2,
-  column1: '21',
-  column2: '22',
-  column3: '23',
-  column4: '24',
-  column5: '25',
-  column6: '26',
-}]
+export const contentData = Array.from(Array(100)).map((v, i) => {
+  return {
+    rowId: i + 1,
+    column2: i + '1',
+    column1: i + '2',
+    column3: i + '3',
+    column6: i + '4',
+    column5: i + '5',
+    column4: i + '6',
+  }
+})
 
 export const headerData = [{
   title: '标题111',
@@ -43,3 +37,38 @@ export const headerData = [{
   columnProp: 'column6',
   sortable: false,
 }]
+
+// 测试排序数据
+export const sortData = Array.from(Array(2)).map((v, i) => {
+  return {
+    rowId: i + 1,
+    column1: i,
+    column2: i + '2',
+    column3: i + '3',
+    column6: i + '4',
+    column5: i + '5',
+    column4: i + '6',
+  }
+})
+
+export const desSortData = [
+  {
+    rowId: '01',
+    column1: 1,
+    column2: '12',
+    column3: '13',
+    column6: '14',
+    column5: '15',
+    column4: '16',
+  }, {
+    rowId: '11',
+    column1: 0,
+    column2: '02',
+    column3: '03',
+    column6: '04',
+    column5: '05',
+    column4: '06',
+  }]
+
+// 第一列表数据
+export const column1SortData = [0, 1];

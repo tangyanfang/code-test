@@ -24,10 +24,12 @@
  * Created by uedc on 2021/10/11.
  */
 
-import { defineComponent, reactive, ref } from '@vue/composition-api'
+import { defineComponent, reactive, ref, computed } from '@vue/composition-api'
 import TableHeader from './table_header/index.vue'
 import TableBody from './table_body/index.vue'
 import TablePager from './pager/index.vue'
+import { PropType } from '@vue/runtime-dom';
+import { row, columnTitle } from './types';
 
 export default defineComponent({
   name: 'Table',
@@ -40,7 +42,7 @@ export default defineComponent({
 
     // 表头内容
     headerData: {
-      type: Array,
+      type: Array as PropType<Array<columnTitle>>,
       default: () => {
         return []
       },
@@ -48,7 +50,7 @@ export default defineComponent({
 
     // 表格内容
     contentData: {
-      type: Array,
+      type: Array as PropType<Array<row>>,
       default: () => {
         return []
       },
@@ -71,12 +73,14 @@ export default defineComponent({
 
     // 向body组件发送排序事件
     const sortHandleEmit = (columnId: string, type: string) => {
+      console.log(columnId, type);
       tableBodyComponent.value.sortHandle(columnId, type)
     }
 
     // 向body组件发送分页事件
-    const pageHandleEmit = (currentPage: number) => {
-      tableBodyComponent.value.pageHandle(currentPage)
+    const pageHandleEmit = (currentPage: number, currentSize: number) => {
+      size.value = currentSize;
+      tableBodyComponent.value.pageHandle(currentPage, currentSize)
     }
 
     // 向head组件发送初始化排序方式事件
@@ -85,7 +89,8 @@ export default defineComponent({
     }
 
     // 获取最大页码
-    const maxPage = Math.ceil(content.list.length/size.value)
+    const maxPage = computed(() => Math.ceil(content.list.length/size.value));
+
 
     return {
       header,

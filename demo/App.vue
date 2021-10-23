@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { TestTable } from '../src/table'
-import { defineComponent, reactive, ref } from '@vue/composition-api'
+import { defineComponent, reactive } from '@vue/composition-api'
 import { headerData } from './test_data'
 
 export default defineComponent({
@@ -18,17 +18,25 @@ export default defineComponent({
     TestTable,
   },
   setup() {
+
+    //表格内容
     const data = reactive({
       list: [],
     })
-    const header = reactive(headerData)
-    const pageSize = ref(5)
+
+    // 其他配置数据
+    const option = reactive({
+      header: headerData,
+      pageSize: 20,
+      sortType: 'onPage'
+    });
+
 
     // 获取表格数据
     const loadData = () => {
-      data.list = Array.from(Array(20)).map((v, i) => {
+      data.list = Array.from(Array(100)).map((v, i) => {
         return {
-          columnId: i + 1,
+          rowId: i + 1,
           column2: i + '1',
           column1: i + '2',
           column3: i + '3',
@@ -39,7 +47,7 @@ export default defineComponent({
       })
     }
     loadData()
-    return { data, loadData, header,  pageSize }
+    return { data, loadData, ...option }
   },
 })
 </script>

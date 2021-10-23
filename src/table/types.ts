@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { string } from 'vue-types'
 import type { PropOptions, PropType } from 'vue-types/dist/types'
 type Prop<T, D = T> = PropOptions<T, D> | PropType<T>
 type PublicRequiredKeys<T> = {
@@ -26,23 +27,37 @@ export type IxPublicPropTypes<O> = O extends object
   ? { [K in PublicRequiredKeys<O>]: InferPropType<O[K]> } & { [K in PublicOptionalKeys<O>]?: InferPropType<O[K]> }
   : { [K in string]: any }
 
-// export const columnType = {
-//   columnId: Number,
-//   columnTitle: String,
-//   columnValue: String
-// }
+// 类型定义一般用interface
+export interface columnTitle {
+  title: string,
+  columnProp: string,
+  sortable: boolean,
+  scale?: number,
+  sortType?: string
+};
 
-// Props 定义在这里
-export const tableProps = {
-  tableData: {
-    type: Array,
-    default: () => {
-      return []
-    }
-  }
-}
 
-export type TablePublicProps = IxPublicPropTypes<typeof tableProps>
+export interface column {
+  id: number,
+  value: string,
+  scale: number
+};
+
+export interface row {
+  rowId: string,
+  columns: Array<column>
+};
+
+
+// interface A {
+//   a: string,
+//   b: string,
+//   c: string
+// };
+
+// type b = Omit<A, 'a'>;
+// type c = Omit<A, 'a' | 'b'>;
+// type d = Pick<A, 'a'>;
 
 
 

@@ -1,6 +1,7 @@
 // 表格公共样式
 
 .my-table {
+    margin: auto;
     border: 1px solid red;
 }
 .my-table-header {
@@ -11,6 +12,10 @@
             padding: 0 4px;
         }
     }
+}
+.my-table-body {
+    height: 600px;
+    overflow-y: auto;
 }
 th {
     border: 1px solid red;
@@ -25,6 +30,11 @@ th {
 .my-table-pager {
     display: flex;
     justify-content: flex-end;
+    border-top: 1px solid red;
+    padding-top: 2px;
+    .pager-list {
+        display: flex;
+    }
     li {
         width: 20px;
         text-align: center;
@@ -33,5 +43,11 @@ th {
     }
     .active {
         border: 1px solid red;
+    }
+    .size-select {
+        width: 50px;
+        background-color: aqua;
+        opacity: 0.5;
+        margin-right: 10px;
     }
 }

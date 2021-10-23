@@ -1,14 +1,24 @@
 <template>
-  <ul class="my-table-pager">
-    <li v-for="pager in pagers"
-        :key="pager"
-        :class="{ active: currentPage === pager }"
-        class="number"
-        @click="onPagerClick(pager)"
-    >
-      {{ pager }}
-    </li>
-  </ul>
+  <div class="my-table-pager">
+    <span>选择每页展示的数据条数：</span>
+    <select v-model="currentSize"
+            class="size-select">
+      <option v-for="item in pageSizes"
+              :key="item"
+              :value ="item">{{item}}</option>
+    </select>
+    <ul class="pager-list">
+      <li v-for="pager in pagers"
+          :key="pager"
+          :class="{ active: currentPage === pager }"
+          class="number"
+          @click="onPagerClick(pager)"
+      >
+        {{ pager }}
+      </li>
+    </ul>
+  </div>
+  
 </template>
 <script lang="ts">
 
@@ -16,7 +26,9 @@
  * 分页组件
  */
 
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, watch, computed } from '@vue/composition-api'
+import debug from 'debug';
+const log = debug('table:pager');
 
 export default defineComponent({
   name: 'TablePager',
@@ -28,19 +40,49 @@ export default defineComponent({
   },
   emits: ['page-handle', 'init-sort-type'],
   setup(props, context) {
-    const currentPage = ref(1) // 当前页码
-    const pagers = Array.from(Array(props.maxPage)).map((v, i) => i+1) // 所有页码
+
+    // 基本数据
+    const option = reactive({
+      pageSizes: [20, 50, 100],
+      currentSize: 20,
+      currentPage: 1
+    });
+    const pagers = computed(() => Array.from(Array(props.maxPage)).map((v, i) => i+1)); // 所有页码
+
+    // 监听maxPage变化
+    watch(() => props.maxPage, (newV) => {
+      if (newV < option.currentPage) {
+        option.currentPage = 1;
+      }
+    });
+
+    // 监听currentSize变化
+    watch(() => option.currentSize, (newV) => {
+      changePage(option.currentPage, newV);
+      initSortType();
+    });
+
+    // 监听currentPage变化
+    watch(() => option.currentPage, (newV) => {
+      changePage(newV, option.currentSize);
+      initSortType();
+    });
 
     // 选择页码
     const onPagerClick = (page: number): void => {
-      currentPage.value = page
+      option.currentPage = page;
+    };
 
-      // 抛出分页事件、初始化排序方式事件
-      context.emit('page-handle', currentPage.value)
+    // 抛出分页事件
+    const changePage = (val: number, currentSize: number) => {
+      context.emit('page-handle', val, currentSize)
+    };
+
+    // 抛出初始化排序事件
+    const initSortType = () => {
       context.emit('init-sort-type')
-    }
-
-    return { currentPage, pagers, onPagerClick }
+    };
+    return { ...toRefs(option), pagers, onPagerClick, changePage, initSortType }
   },
 })
 </script>

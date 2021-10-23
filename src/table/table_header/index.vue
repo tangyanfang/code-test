@@ -26,13 +26,14 @@
  * 表格头
  */
 
+import { PropType } from '@vue/runtime-dom';
 import { defineComponent, reactive } from '@vue/composition-api'
-
+import { columnTitle } from '../types';
 export default defineComponent({
   name: 'TableHeader',
   props: {
     headerData: {
-      type: Array,
+      type: Array as PropType<Array<columnTitle>>,
       default: () => {
         return []
       },
@@ -53,7 +54,7 @@ export default defineComponent({
     })
 
     // 抛出排序事件
-    const handleSortClick = (item: object, columnProp: string, type: string): void => {
+    const handleSortClick = (item: any, columnProp?: string, type?: string): void => {
       item.sortType = type || ''
       context.emit('sort-handle', columnProp, type)
     }

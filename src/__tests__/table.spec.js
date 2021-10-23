@@ -51,7 +51,6 @@ describe('Table', () => {
       const column1Data = tableBodyWrapper.findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
       const column1SortBeforeStr = column1Data.toString()
       expect(column1SortBeforeStr).toEqual(column1SortData.sort((a, b) => b - a).toString())
-      done()
     })
   })
 

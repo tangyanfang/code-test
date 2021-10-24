@@ -41,17 +41,23 @@ describe('Table', () => {
         pageSize: 20
       }
     });
+    // 期待存在排序按钮
+    expect(tableHeaderWrapper.find('button').exists()).toBe(true)
+    tableHeaderWrapper.findAll('button').wrappers[1].trigger('click') 
+
+    // 点击完降序按钮后，期待按钮置灰
+    expect(tableHeaderWrapper.findAll('button').wrappers[1].exists('[disabled=disabled]')).toBeTruthy()
 
     // 模拟点击第1列降序
-    await tableHeaderWrapper.findAll('button').wrappers[1].trigger('click') 
-    tableHeaderWrapper.vm.$emit('sort-handle', 'column1', 'des');
+    // await tableHeaderWrapper.findAll('button').wrappers[1].trigger('click') 
+    // tableHeaderWrapper.vm.$emit('sort-handle', 'column1', 'des');
 
-    // 检查是否降序排序了
-    tableHeaderWrapper.vm.$nextTick(() => {
-      const column1Data = tableBodyWrapper.findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
-      const column1SortBeforeStr = column1Data.toString()
-      expect(column1SortBeforeStr).toEqual(column1SortData.sort((a, b) => b - a).toString())
-    })
+    // // 检查是否降序排序了
+    // tableHeaderWrapper.vm.$nextTick(() => {
+    //   const column1Data = tableBodyWrapper.findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
+    //   const column1SortBeforeStr = column1Data.toString()
+    //   expect(column1SortBeforeStr).toEqual(column1SortData.sort((a, b) => b - a).toString())
+    // })
   })
 
   // 分页测试

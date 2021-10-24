@@ -73,7 +73,6 @@ export default defineComponent({
 
     // 向body组件发送排序事件
     const sortHandleEmit = (columnId: string, type: string) => {
-      console.log(columnId, type);
       tableBodyComponent.value.sortHandle(columnId, type)
     }
 

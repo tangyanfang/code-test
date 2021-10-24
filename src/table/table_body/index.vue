@@ -21,7 +21,7 @@
  * 表格body
  */
 
-import { defineComponent, reactive } from '@vue/composition-api'
+import { defineComponent, onMounted, reactive } from '@vue/composition-api'
 import { compare, hanledRowData, getTdWidth } from '../utils';
 import debug from 'debug';
 import { PropType } from '@vue/runtime-dom';
@@ -63,7 +63,7 @@ export default defineComponent({
 
     // 排序方法
     const sortHandle = (columnId: string, type: string) => {
-      if (columnId) {
+      if (type !== 'reset') {
         fixedRowData.list = fixedRowData.list.sort(compare(columnId, type))
         return;
       }
@@ -81,6 +81,9 @@ export default defineComponent({
       // 切换页码后，保存原始数据
       currentPageSource.list = JSON.parse(JSON.stringify(fixedRowData.list))
     };
+    onMounted(() => {
+      pageHandle(1, props.pageSize);
+    });
     return { fixedRowData, currentPageSource, columnTitle, getTdWidth, sortHandle, pageHandle }
   },
 })

@@ -3,17 +3,15 @@
     <tr>
       <th v-for="item in data.list"
           :key="item.title"
+          :class="{ cansort: item.sortable, ascending: item.sortType === 'asc', descending: item.sortType === 'des'}"
+          @click="handleSortClick(item)"
       >
         <span>{{ item.title }}</span>
-        <span v-if="item.sortable">
-          <button :disabled="item.sortType === 'asc'" @click="handleSortClick(item, item.columnProp, 'asc')">
-            升序
+        <span v-if="item.sortable"
+            class="caret-wrapper">
+          <button class="sort-caret ascending">
           </button>
-          <button :disabled="item.sortType === 'des'" @click="handleSortClick(item, item.columnProp, 'des')">
-            降序
-          </button>
-          <button :disabled="!item.sortType" @click="handleSortClick(item)">
-            恢复
+          <button class="sort-caret descending">
           </button>
         </span>
       </th>
@@ -49,14 +47,22 @@ export default defineComponent({
     data.list = data.list.map(item => {
       return {
         ...item,
-        sortType: '',
+        sortType: 'reset',
       }
     })
 
     // 抛出排序事件
-    const handleSortClick = (item: any, columnProp?: string, type?: string): void => {
-      item.sortType = type || ''
-      context.emit('sort-handle', columnProp, type)
+    const handleSortClick = (item: any): void => {
+      const SORT_TYPE = ['asc', 'des', 'reset'];
+      if (!item.sortable) {
+        return;
+      }
+      let newIndex = SORT_TYPE.indexOf(item.sortType) + 1;
+      if (newIndex >= SORT_TYPE.length) {
+        newIndex = 0;
+      }
+      item.sortType = SORT_TYPE[newIndex];
+      context.emit('sort-handle', item.columnProp, item.sortType)
     }
 
     // 初始化排序状态

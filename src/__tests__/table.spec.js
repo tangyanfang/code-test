@@ -5,7 +5,7 @@ import { TestTable } from '../table'
 import TableHeader from '../table/table_header/index.vue'
 import TableBody  from '../table/table_body/index.vue'
 import TablePager from '../table/pager/index.vue'
-import { contentData, headerData, sortData, column1SortData, desSortData} from '../../demo/test_data'
+import { headerData, column1DesSortData, column1AscSortData,  sortData} from '../../demo/test_data'
 import { compare } from '../table/utils';
 
 Vue.use(CompositionApi)
@@ -27,51 +27,29 @@ describe('Table', () => {
 
   // 排序测试
   test('排序测试', async () => {
-    const wrapper = TableMount()
-
     const tableHeaderWrapper = tableHeader({
       propsData: {
         headerData: headerData
       }
     });
-    const tableBodyWrapper = tableBody({
-      propsData: {
-        headerData: headerData,
-        contentData: sortData,
-        pageSize: 20
-      }
-    });
     // 期待存在排序按钮
     expect(tableHeaderWrapper.find('button').exists()).toBe(true)
+
+    // 模拟点击第1列降序
     tableHeaderWrapper.findAll('button').wrappers[1].trigger('click') 
 
     // 点击完降序按钮后，期待按钮置灰
     expect(tableHeaderWrapper.findAll('button').wrappers[1].exists('[disabled=disabled]')).toBeTruthy()
 
-    // 模拟点击第1列降序
-    // await tableHeaderWrapper.findAll('button').wrappers[1].trigger('click') 
-    // tableHeaderWrapper.vm.$emit('sort-handle', 'column1', 'des');
-
-    // // 检查是否降序排序了
-    // tableHeaderWrapper.vm.$nextTick(() => {
-    //   const column1Data = tableBodyWrapper.findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
-    //   const column1SortBeforeStr = column1Data.toString()
-    //   expect(column1SortBeforeStr).toEqual(column1SortData.sort((a, b) => b - a).toString())
-    // })
+    //断言是否发出排序事件
+    expect(tableHeaderWrapper.emitted()['sort-handle']).toBeTruthy()
   })
 
   // 分页测试
-  test('测试分页2', async () => {
-    const tableBodyWrapper = tableBody({
-      propsData: {
-        headerData: headerData,
-        contentData: contentData,
-        pageSize: 20
-      }
-    });
+  test('分页测试', async () => {
     const tablePagerWrapper = tablePager({
       propsData: {
-        maxPage: 3
+        maxPage: 5
       }
     });
 
@@ -83,6 +61,40 @@ describe('Table', () => {
 
     // 测试分页条中的3是否激活
     expect(tablePagerWrapper.findAll('li.number').wrappers[2].find('.active').exists()).toBeTruthy()
+
+    // 测试当前页码大于最大页码时，是否跳转到了第一页
+    await tablePagerWrapper.setData({ currentPage: 5 })
+    await tablePagerWrapper.setProps({ maxPage: 3 })
+    expect(tablePagerWrapper.findAll('li.number').wrappers[0].find('.active').exists()).toBeTruthy()
+
+    // 测试currentSize变化时，有发送分页事件
+    await tablePagerWrapper.setData({ currentSize: 50 })
+    expect(tablePagerWrapper.emitted()['page-handle']).toBeTruthy()
+  })
+
+  //
+  test('table-body排序测试', async () => {
+    const table = TableMount({
+      propsData: {
+        headerData: headerData,
+        contentData: sortData,
+        pageSize: 20
+      }
+    })
+
+    // tableHeader发送排序事件给table，table调用table-body的排序方法
+    // 升序
+    await table.findAll('.my-table-header th').wrappers[0].trigger('click')
+    expect(table.findComponent(TableHeader).emitted()['sort-handle']).toBeTruthy()
+    let ascData = table.findComponent(TableBody).findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
+    let ascDataBeforeStr = ascData.toString()
+    expect(ascDataBeforeStr).toEqual(column1AscSortData.sort((a, b) => a - b).toString())
+
+    // 降序
+    await table.findAll('.my-table-header th').wrappers[0].trigger('click')
+    let desData = table.findComponent(TableBody).findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
+    let desDataBeforeStr = desData.toString()
+    expect(desDataBeforeStr).toEqual(column1DesSortData.sort((a, b) => b - a).toString())
   })
 
   // 测试排序方法是否正确

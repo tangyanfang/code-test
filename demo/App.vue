@@ -2,8 +2,21 @@
   <div>
     <TestTable :content-data="data.list"
                :header-data="header"
-               :page-size="pageSize"
-    />
+               :page-size="pageSize">
+        
+        <!-- 自定义列 -->
+        <template v-slot:column="{column, rowData}">
+          <span v-if="column === 'column1'">
+            {{ `第一列：${rowData.column1}` }}
+          </span>
+          <span v-else-if="column === 'column2'">
+            {{ `第二列：${rowData.column2}` }}
+          </span>
+          <span v-else="column === 'column2'">
+            {{ rowData[column] }}
+          </span>
+        </template>
+    </TestTable>
   </div>
 </template>
 

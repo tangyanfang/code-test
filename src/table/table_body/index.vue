@@ -8,8 +8,9 @@
             :key="column.id"
             :style="`width: ${getTdWidth(column.scale, columnTitle)}`"
             :class="column.id">
-
-          {{ column.value }}
+            <slot name="column" :row-data="item" :column="column.id">
+              <span>{{ column.value }}</span>
+            </slot>
         </td>
       </div>
     </div>

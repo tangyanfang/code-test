@@ -8,6 +8,9 @@
                 :header-data="header"
                 :content-data="content.list"
                 :page-size="size">
+        <template v-slot:column="{column, rowData}" >
+          <slot name="column" :row-data="rowData" :column="column"></slot>
+        </template>
     </table-body>
     <table-pager
       :max-page="maxPage"

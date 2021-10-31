@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { TestTable } from '../src/table'
-import { defineComponent, reactive } from '@vue/composition-api'
+import { defineComponent, reactive, onMounted } from '@vue/composition-api'
 import { headerData } from './test_data'
 
 export default defineComponent({
@@ -27,8 +27,7 @@ export default defineComponent({
     // 其他配置数据
     const option = reactive({
       header: headerData,
-      pageSize: 20,
-      sortType: 'onPage'
+      pageSize: 20
     });
 
 
@@ -46,8 +45,10 @@ export default defineComponent({
         }
       })
     }
-    loadData()
-    return { data, loadData, ...option }
+    onMounted(() => {
+      loadData()
+    }); 
+    return { data, ...option }
   },
 })
 </script>

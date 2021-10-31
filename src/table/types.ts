@@ -28,7 +28,7 @@ export type IxPublicPropTypes<O> = O extends object
   : { [K in string]: any }
 
 // 类型定义一般用interface
-export interface columnTitle {
+export interface ColumnTitle {
   title: string,
   columnProp: string,
   sortable: boolean,
@@ -37,15 +37,15 @@ export interface columnTitle {
 };
 
 
-export interface column {
+export interface Column {
   id: number,
   value: string,
   scale: number
 };
 
-export interface row {
+export interface Row {
   rowId: string,
-  columns: Array<column>
+  columns: Array<Column>
 };
 
 

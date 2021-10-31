@@ -8,6 +8,7 @@
             :key="column.id"
             :style="`width: ${getTdWidth(column.scale, columnTitle)}`"
             :class="column.id">
+
           {{ column.value }}
         </td>
       </div>
@@ -21,11 +22,11 @@
  * 表格body
  */
 
-import { defineComponent, onMounted, reactive } from '@vue/composition-api'
+import { defineComponent,  reactive, watch } from '@vue/composition-api'
 import { compare, hanledRowData, getTdWidth } from '../utils';
 import debug from 'debug';
 import { PropType } from '@vue/runtime-dom';
-import { row } from '../types';
+import type { Row } from '../types';
 const log = debug('table:body');
 
 export default defineComponent({
@@ -38,7 +39,7 @@ export default defineComponent({
       },
     },
     contentData: {
-      type: Array as PropType<Array<row>>,
+      type: Array as PropType<Array<Row>>,
       default: () => {
         return []
       },
@@ -50,16 +51,23 @@ export default defineComponent({
   },
 
   setup(props) {
-    log('test');
     const columnTitle = props.headerData;
     const fixedRowData = reactive({
-      list: hanledRowData(props.contentData, columnTitle), // 渲染到页面上的数据
+      list: [] as Array<Record<string, any>>, // 渲染到页面上的数据
     })
 
-    const resourceData = JSON.parse(JSON.stringify(fixedRowData.list)); // 数据处理后的数据备份
+    let resourceData = [] as Array<Record<string, any>>; // 数据处理后的数据备份
     const currentPageSource = { // 当前页原始数据
       list: [] as Array<Record<string, any>>,
     };
+
+    // 监听父组件的tabledata
+    watch(() => props.contentData, newVal => {
+      fixedRowData.list =hanledRowData(newVal, columnTitle)
+      resourceData = JSON.parse(JSON.stringify(fixedRowData.list))
+      pageHandle(1, props.pageSize);
+      log(`第一页数据：${fixedRowData.list}`);
+    })
 
     // 排序方法
     const sortHandle = (columnId: string, type: string) => {
@@ -81,9 +89,6 @@ export default defineComponent({
       // 切换页码后，保存原始数据
       currentPageSource.list = JSON.parse(JSON.stringify(fixedRowData.list))
     };
-    onMounted(() => {
-      pageHandle(1, props.pageSize);
-    });
     return { fixedRowData, currentPageSource, columnTitle, getTdWidth, sortHandle, pageHandle }
   },
 })

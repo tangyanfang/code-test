@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Table render 1`] = `
+"<table class=\\"my-table\\">
+  <div class=\\"my-table-header\\">
+    <tr></tr>
+  </div>
+  <div class=\\"my-table-body\\">
+    <div>暂无数据</div>
+  </div>
+  <div class=\\"my-table-pager\\" page-size=\\"20\\"><span>选择每页展示的数据条数：</span> <select class=\\"size-select\\">
+      <option value=\\"20\\">20</option>
+      <option value=\\"50\\">50</option>
+      <option value=\\"100\\">100</option>
+    </select>
+    <ul class=\\"pager-list\\"></ul>
+  </div>
+</table>"
+`;

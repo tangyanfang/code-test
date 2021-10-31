@@ -7,8 +7,8 @@
     <table-body ref="tableBodyComponent"
                 :header-data="header"
                 :content-data="content.list"
-                :page-size="size"
-    />
+                :page-size="size">
+    </table-body>
     <table-pager
       :max-page="maxPage"
       :page-size="size"
@@ -24,12 +24,14 @@
  * Created by uedc on 2021/10/11.
  */
 
-import { defineComponent, reactive, ref, computed } from '@vue/composition-api'
+import { defineComponent, reactive, ref, computed, watch } from '@vue/composition-api'
 import TableHeader from './table_header/index.vue'
 import TableBody from './table_body/index.vue'
 import TablePager from './pager/index.vue'
 import { PropType } from '@vue/runtime-dom';
-import { row, columnTitle } from './types';
+import type { Row, ColumnTitle } from './types';
+import debug from 'debug';
+const log = debug('table:Table');
 
 export default defineComponent({
   name: 'Table',
@@ -42,7 +44,7 @@ export default defineComponent({
 
     // 表头内容
     headerData: {
-      type: Array as PropType<Array<columnTitle>>,
+      type: Array as PropType<Array<ColumnTitle>>,
       default: () => {
         return []
       },
@@ -50,7 +52,7 @@ export default defineComponent({
 
     // 表格内容
     contentData: {
-      type: Array as PropType<Array<row>>,
+      type: Array as PropType<Array<Row>>,
       default: () => {
         return []
       },
@@ -65,11 +67,16 @@ export default defineComponent({
   setup(props) {
     const header = props.headerData
     const content = reactive({
-      list: props.contentData,
+      list: [] as Array<Record<string, any>>,
     })
     const size = ref(props.pageSize)
     const tableBodyComponent = ref<any>()
     const tableHeaderComponent = ref<any>()
+
+    // 监听父组件的tabledata
+    watch(() => props.contentData, newVal => {
+      content.list = newVal
+    })
 
     // 向body组件发送排序事件
     const sortHandleEmit = (columnId: string, type: string) => {
@@ -80,6 +87,7 @@ export default defineComponent({
     const pageHandleEmit = (currentPage: number, currentSize: number) => {
       size.value = currentSize;
       tableBodyComponent.value.pageHandle(currentPage, currentSize)
+      log(`当前页码：${currentPage}，每页数据条数：${currentSize}`);
     }
 
     // 向head组件发送初始化排序方式事件

@@ -26,12 +26,12 @@
 
 import { PropType } from '@vue/runtime-dom';
 import { defineComponent, reactive } from '@vue/composition-api'
-import { columnTitle } from '../types';
+import type { ColumnTitle } from '../types';
 export default defineComponent({
   name: 'TableHeader',
   props: {
     headerData: {
-      type: Array as PropType<Array<columnTitle>>,
+      type: Array as PropType<Array<ColumnTitle>>,
       default: () => {
         return []
       },

@@ -6,6 +6,13 @@
 }
 .my-table-header {
     border-bottom: 1px solid red;
+    tr {
+        display: flex;
+        width: 100%;
+        th {
+            flex: 1;
+        }
+    }
     .cansort {
         cursor: pointer;
     }
@@ -25,6 +32,7 @@ th {
     padding: 4px;
 }
 .row-content {
+    display: flex;
     td {
         display: inline-block;
         padding: 4px 16px;
@@ -79,4 +87,9 @@ th {
         border-bottom-color: #c0c4cc;
         top: 5px;
     }
+}
+.ellipsis {
+    overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap
 }

@@ -80,10 +80,12 @@ export default defineComponent({
     const sortHandle = (columnId: string, type: string) => {
       if (type !== 'reset') {
         fixedRowData.list = fixedRowData.list.sort(compare(columnId, type))
+        log(`排序列：${columnId}，类型：${type}`);
         return;
       }
       fixedRowData.list = JSON.parse(JSON.stringify(currentPageSource.list))
       getInnerText(fixedRowData.list);
+      log(`排序列：${columnId}，类型：${type}`);
     }
 
     // 分页方法
@@ -94,6 +96,7 @@ export default defineComponent({
       }
       fixedRowData.list = resourceData.slice((currentPage - 1) * size, currentPage * size)
       getInnerText(fixedRowData.list);
+      log(`分页页码：${currentPage}，每页数量：${currentSize}`);
 
       // 切换页码后，保存原始数据
       currentPageSource.list = JSON.parse(JSON.stringify(fixedRowData.list))

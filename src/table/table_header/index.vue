@@ -1,9 +1,9 @@
 <template>
   <div class="my-table-header">
     <tr>
-      <th v-for="item in data.list"
+      <th v-for="item in list"
           :key="item.title"
-          :class="{ cansort: item.sortable, ascending: item.sortType === 'asc', descending: item.sortType === 'des'}"
+          :class="useClasses(item)"
           @click="handleSortClick(item)"
       >
         <span>{{ item.title }}</span>
@@ -25,8 +25,14 @@
  */
 
 import { PropType } from '@vue/runtime-dom';
-import { defineComponent, reactive } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import type { ColumnTitle } from '../types';
+import { 
+  SORT_TYPES, 
+  ASC_CLS,
+  DES_CLS
+} from '../const';
+
 export default defineComponent({
   name: 'TableHeader',
   props: {
@@ -38,40 +44,43 @@ export default defineComponent({
     },
   },
   emits: ['sort-handle'],
-  setup(props, context) {
-    const data = reactive({
+  setup(props, {emit}) {
+    const state = reactive({
       list: props.headerData,
+      sortName: '',
+      sortType: ''
     })
 
-    // 表头数据添加sortType属性
-    data.list = data.list.map(item => {
-      return {
-        ...item,
-        sortType: 'reset',
-      }
-    })
+    // 获取排序图标类
+    const useClasses = (item: ColumnTitle) => {
+      if (state.sortName !== item.columnProp) return;
+      return state.sortType === SORT_TYPES.asc ? ASC_CLS : (state.sortType === SORT_TYPES.des ? DES_CLS : '');
+    }
 
     // 抛出排序事件
-    const handleSortClick = (item: any): void => {
-      const SORT_TYPE = ['asc', 'des', 'reset'];
+    const handleSortClick = (item: ColumnTitle): void => {
       if (!item.sortable) {
         return;
       }
-      let newIndex = SORT_TYPE.indexOf(item.sortType) + 1;
-      if (newIndex >= SORT_TYPE.length) {
-        newIndex = 0;
-      }
-      item.sortType = SORT_TYPE[newIndex];
-      context.emit('sort-handle', item.columnProp, item.sortType)
+      state.sortName = item.columnProp;
+
+      // 排序方式循环
+      const sortTypes = [SORT_TYPES.asc, SORT_TYPES.des, SORT_TYPES.reset];
+      const newIndex = (sortTypes.indexOf(state.sortType || SORT_TYPES.reset) + 1) % sortTypes.length;
+      state.sortType = sortTypes[newIndex];
+      emit('sort-handle', state.sortName, state.sortType)
     }
 
-    // 初始化排序状态
-    const initSortType = (): void => {
-      data.list.forEach(item => {
-        item.sortType = ''
-      })
+    // 接收分页后排序事件
+    const sortCurrentPage = () => {
+     emit('sort-handle', state.sortName, state.sortType)
+    };
+    return { 
+      ...toRefs(state),
+      handleSortClick,
+      useClasses,
+      sortCurrentPage
     }
-    return { data, handleSortClick, initSortType }
   },
 })
 </script>

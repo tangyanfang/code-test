@@ -11,17 +11,17 @@ export const contentData = Array.from(Array(100)).map((v, i) => {
 })
 
 export const headerData = [{
-  title: '标题111',
+  title: '标题1',
   columnProp: 'column1',
   sortable: true,
   scale: 1,
 }, {
   title: '标题2',
   columnProp: 'column2',
-  sortable: false,
+  sortable: true,
   scale: 1,
 }, {
-  title: '标题13',
+  title: '标题3',
   columnProp: 'column3',
   sortable: false,
 }, {

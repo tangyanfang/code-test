@@ -16,7 +16,6 @@
       :max-page="maxPage"
       :page-size="size"
       @page-handle="pageHandleEmit"
-      @init-sort-type="initSortTypeEmit"
     />
   </table>
 </template>
@@ -91,11 +90,7 @@ export default defineComponent({
       size.value = currentSize;
       tableBodyComponent.value.pageHandle(currentPage, currentSize)
       log(`当前页码：${currentPage}，每页数据条数：${currentSize}`);
-    }
-
-    // 向head组件发送初始化排序方式事件
-    const initSortTypeEmit = () => {
-      tableHeaderComponent.value.initSortType()
+      tableHeaderComponent.value.sortCurrentPage();
     }
 
     // 获取最大页码
@@ -109,7 +104,6 @@ export default defineComponent({
       maxPage,
       sortHandleEmit,
       pageHandleEmit,
-      initSortTypeEmit,
       tableBodyComponent,
       tableHeaderComponent,
     }

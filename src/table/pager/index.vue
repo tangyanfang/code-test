@@ -38,8 +38,8 @@ export default defineComponent({
       default: 1,
     },
   },
-  emits: ['page-handle', 'init-sort-type'],
-  setup(props, context) {
+  emits: ['page-handle'],
+  setup(props, {emit}) {
 
     // 基本数据
     const option = reactive({
@@ -59,13 +59,11 @@ export default defineComponent({
     // 监听currentSize变化
     watch(() => option.currentSize, (newV) => {
       changePage(option.currentPage, newV);
-      initSortType();
     });
 
     // 监听currentPage变化
     watch(() => option.currentPage, (newV) => {
       changePage(newV, option.currentSize);
-      initSortType();
     });
 
     // 选择页码
@@ -75,14 +73,14 @@ export default defineComponent({
 
     // 抛出分页事件
     const changePage = (val: number, currentSize: number) => {
-      context.emit('page-handle', val, currentSize)
+      emit('page-handle', val, currentSize)
     };
-
-    // 抛出初始化排序事件
-    const initSortType = () => {
-      context.emit('init-sort-type')
-    };
-    return { ...toRefs(option), pagers, onPagerClick, changePage, initSortType }
+    return { 
+      ...toRefs(option), 
+      pagers, 
+      onPagerClick, 
+      changePage
+    }
   },
 })
 </script>

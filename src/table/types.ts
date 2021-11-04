@@ -33,7 +33,8 @@ export interface ColumnTitle {
   columnProp: string,
   sortable: boolean,
   scale?: number,
-  sortType?: string
+  sortType?: string,
+  sortCls?: string
 };
 
 

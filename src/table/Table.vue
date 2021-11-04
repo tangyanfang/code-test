@@ -6,17 +6,11 @@
     />
     <table-body ref="tableBodyComponent"
                 :header-data="header"
-                :content-data="content.list"
-                :page-size="size">
+                :content-data="content.list">
         <template v-slot:column="{column, rowData}" >
           <slot name="column" :row-data="rowData" :column="column"></slot>
         </template>
     </table-body>
-    <table-pager
-      :max-page="maxPage"
-      :page-size="size"
-      @page-handle="pageHandleEmit"
-    />
   </table>
 </template>
 
@@ -26,7 +20,7 @@
  * Created by uedc on 2021/10/11.
  */
 
-import { defineComponent, reactive, ref, computed, watch } from '@vue/composition-api'
+import { defineComponent, reactive, ref, watch } from '@vue/composition-api'
 import TableHeader from './table_header/index.vue'
 import TableBody from './table_body/index.vue'
 import TablePager from './pager/index.vue'
@@ -58,20 +52,13 @@ export default defineComponent({
       default: () => {
         return []
       },
-    },
-
-    // 每页展示的数据条数
-    pageSize: {
-      type: Number,
-      default: 20,
-    },
+    }
   },
   setup(props) {
     const header = props.headerData
     const content = reactive({
       list: [] as Array<Record<string, any>>,
     })
-    const size = ref(props.pageSize)
     const tableBodyComponent = ref<any>()
     const tableHeaderComponent = ref<any>()
 
@@ -87,21 +74,13 @@ export default defineComponent({
 
     // 向body组件发送分页事件
     const pageHandleEmit = (currentPage: number, currentSize: number) => {
-      size.value = currentSize;
       tableBodyComponent.value.pageHandle(currentPage, currentSize)
       log(`当前页码：${currentPage}，每页数据条数：${currentSize}`);
       tableHeaderComponent.value.sortCurrentPage();
     }
-
-    // 获取最大页码
-    const maxPage = computed(() => Math.ceil(content.list.length/size.value));
-
-
     return {
       header,
       content,
-      size,
-      maxPage,
       sortHandleEmit,
       pageHandleEmit,
       tableBodyComponent,

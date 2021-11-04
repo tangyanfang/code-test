@@ -1,11 +1,11 @@
 // 表格公共样式
 
 .my-table {
-    margin: auto;
-    border: 1px solid red;
+    width: 100%;
+    border: 1px solid #d9d9d9;
 }
 .my-table-header {
-    border-bottom: 1px solid red;
+    background-color: #f2f2f2;
     tr {
         display: flex;
         width: 100%;
@@ -28,7 +28,7 @@
     overflow-y: auto;
 }
 th {
-    border: 1px solid red;
+    border: 1px solid #d9d9d9;
     padding: 4px;
 }
 .row-content {
@@ -39,9 +39,10 @@ th {
     }
 }
 .my-table-pager {
+    width: 100%;
     display: flex;
     justify-content: flex-end;
-    border-top: 1px solid red;
+    border-top: 1px solid #d9d9d9;
     padding-top: 2px;
     .pager-list {
         display: flex;
@@ -53,12 +54,11 @@ th {
         cursor: pointer;
     }
     .active {
-        border: 1px solid red;
+        border: 1px solid #36f;
     }
     .size-select {
         width: 50px;
-        background-color: aqua;
-        opacity: 0.5;
+        border: 1px solid #36f;
         margin-right: 10px;
     }
 }

@@ -51,7 +51,7 @@ export default defineComponent({
     pageSize: {
       type: Number,
       default: 20,
-    },
+    }
   },
 
   setup(props) {
@@ -66,11 +66,7 @@ export default defineComponent({
     watch(() => props.contentData, newVal => {
       state.fixedRowData =hanledRowData(newVal, state.columnTitle);
       state.resourceData = cloneDeep(state.fixedRowData);
-
-      //////////////
-      // 需要优化 //
       pageHandle(1, props.pageSize);
-      log(`第一页数据：${state.fixedRowData}`);
     })
 
     // 排序方法
@@ -85,11 +81,7 @@ export default defineComponent({
 
     // 分页方法
     const pageHandle = (currentPage: number, currentSize: number) => {
-      let size = props.pageSize;
-      if (currentSize) {
-        size = currentSize;
-      }
-      state.fixedRowData = state.resourceData.slice((currentPage - 1) * size, currentPage * size)
+      state.fixedRowData = state.resourceData.slice((currentPage - 1) * currentSize, currentPage * currentSize)
       log(`分页页码：${currentPage}，每页数量：${currentSize}`);
 
       // 切换页码后，保存原始数据

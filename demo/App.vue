@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <TestTable :content-data="data.list"
-               :header-data="header"
-               :page-size="pageSize">
+  <div class="table-wrap">
+    <TestTable  ref="tableComponent"
+               :content-data="data.list"
+               :header-data="header">
         
         <!-- 自定义列 -->
         <template v-slot:column="{column, rowData}">
@@ -17,18 +17,24 @@
           </span>
         </template>
     </TestTable>
+    <table-pager
+      :total="data.list.length"
+      @page-handle="pageHandleMethod"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { TestTable } from '../src/table'
-import { defineComponent, reactive, onMounted } from '@vue/composition-api'
+import TablePager from '../src/table/pager/index.vue'
+import { ref, defineComponent, reactive, onMounted } from '@vue/composition-api'
 import { headerData } from './test_data'
 
 export default defineComponent({
   name: 'App',
   components: {
     TestTable,
+    TablePager
   },
   setup() {
 
@@ -39,10 +45,9 @@ export default defineComponent({
 
     // 其他配置数据
     const option = reactive({
-      header: headerData,
-      pageSize: 20
+      header: headerData
     });
-
+    const tableComponent = ref<any>()
 
     // 获取表格数据
     const loadData = () => {
@@ -59,10 +64,20 @@ export default defineComponent({
         }
       })
     }
+
+    // 向body组件发送分页事件
+    const pageHandleMethod = (currentPage?: number, currentSize?: number) => {
+      tableComponent.value.pageHandleEmit(currentPage, currentSize)
+    }
     onMounted(() => {
-      loadData()
+      loadData();
     }); 
-    return { data, ...option }
+    return { 
+      data, 
+      ...option,
+      tableComponent,
+      pageHandleMethod
+     }
   },
 })
 </script>

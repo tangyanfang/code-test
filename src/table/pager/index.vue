@@ -33,9 +33,9 @@ const log = debug('table:pager');
 export default defineComponent({
   name: 'TablePager',
   props: {
-    maxPage: {
+    total: {
       type: Number,
-      default: 1,
+      default: 0,
     },
   },
   emits: ['page-handle'],
@@ -47,10 +47,19 @@ export default defineComponent({
       currentSize: 20,
       currentPage: 1
     });
-    const pagers = computed(() => Array.from(Array(props.maxPage)).map((v, i) => i+1)); // 所有页码
+    const useConvertProps = (props: any) => {
+      const maxPage =  computed(() => {
+        return Math.ceil(props.total/option.currentSize);
+      });
+
+      // 获取所有页码
+      const pagers = computed(() => Array.from(Array(maxPage.value)).map((v, i) => i+1)); 
+      return  { maxPage, pagers };
+    };
+    const { maxPage, pagers } = useConvertProps(props);
 
     // 监听maxPage变化
-    watch(() => props.maxPage, (newV) => {
+    watch(maxPage, (newV) => {
       if (newV < option.currentPage) {
         option.currentPage = 1;
       }
@@ -77,7 +86,9 @@ export default defineComponent({
     };
     return { 
       ...toRefs(option), 
-      pagers, 
+      pagers,
+      maxPage, 
+      useConvertProps,
       onPagerClick, 
       changePage
     }

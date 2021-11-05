@@ -108,9 +108,6 @@ describe('Table', () => {
     // 期待组件升序后的值等于给定的值
     await table.findAll('.my-table-header th').wrappers[0].trigger('click')
     expect(table.findComponent(TableHeader).emitted()['sort-handle']).toBeTruthy()
-    let test = table.findComponent(TableBody);
-    let test1 = test.findAll('.my-table-body .column1');
-    let test2 = test1.wrappers;
     let ascData = table.findComponent(TableBody)
       .findAll('.my-table-body .column1')
       .wrappers

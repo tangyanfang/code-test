@@ -31,7 +31,6 @@ import { TestTable } from '../src/table'
 import TablePager from '../src/table/pager/index.vue'
 import { ref, defineComponent, reactive, onMounted, computed } from '@vue/composition-api'
 import { headerData } from './test_data'
-import { Row } from 'src/table/types'
 
 export default defineComponent({
   name: 'App',
@@ -44,7 +43,7 @@ export default defineComponent({
 
     //表格内容
     const state = reactive({
-      list: [] as Array<Row>,
+      list: [] as Array<any>,
       headers: headerData,
       currentPage: 1,
       pageSize: 20

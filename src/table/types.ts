@@ -27,7 +27,7 @@ export type IxPublicPropTypes<O> = O extends object
   ? { [K in PublicRequiredKeys<O>]: InferPropType<O[K]> } & { [K in PublicOptionalKeys<O>]?: InferPropType<O[K]> }
   : { [K in string]: any }
 
-// 类型定义一般用interface
+// 定义表头列类型
 export interface ColumnTitle {
   title: string,
   columnProp: string,
@@ -37,28 +37,25 @@ export interface ColumnTitle {
   sortCls?: string
 };
 
-
+// 定义表格内容每个单元格类型
 export interface Column {
-  id: number,
+  id: string,
   value: string,
   scale: number
 };
 
+// 定义表格行数据类型
 export interface Row {
   rowId: string,
+  column1: string,
+  column2: string,
+  column3: string,
+  column4: string,
+  column5: string,
+  column6: string,
+  columns?: Array<Column>,
+  [propName: string]: any,
 };
-
-
-
-// interface A {
-//   a: string,
-//   b: string,
-//   c: string
-// };
-
-// type b = Omit<A, 'a'>;
-// type c = Omit<A, 'a' | 'b'>;
-// type d = Pick<A, 'a'>;
 
 
 

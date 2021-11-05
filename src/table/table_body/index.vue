@@ -29,18 +29,18 @@
  */
 
 import { toRefs, defineComponent,  reactive, watch, computed } from '@vue/composition-api'
-import { compare, hanledRowData, getTdWidth } from '../utils';
+import { compare, getTdWidth } from '../utils';
 import debug from 'debug';
 import { PropType } from '@vue/runtime-dom';
 import { cloneDeep } from 'lodash-es'
-import type { Row } from '../types';
+import type { ColumnTitle, Row, Column } from '../types';
 const log = debug('table:body');
 
 export default defineComponent({
   name: 'TableBody',
   props: {
     headerData: {
-      type: Array,
+      type: Array as PropType<Array<ColumnTitle>>,
       default: () => {
         return []
       },
@@ -56,11 +56,34 @@ export default defineComponent({
   setup(props, { emit }) {
     const state = reactive({
       columnTitle: props.headerData,
-      fixedRowData: [] as Array<any>, // 渲染到页面上的数据
+      fixedRowData: [] as Array<Row>, // 渲染到页面上的数据
     });
 
     // 获取表格当前页原始数据
     const useConvertProps = (props: any) => {
+
+      // 表格中的列数据添加列属性
+      const getColumns = (row: any, headers: Array<ColumnTitle>) => {
+        const handleColumns: Array<Column> = []
+        headers.forEach((item: ColumnTitle) => {
+          handleColumns.push({
+            id: item.columnProp,
+            value: row[item.columnProp],
+            scale: item.scale || 1,
+          })
+        })
+        return handleColumns;
+      }
+
+      // 将每行的列数据处理成数组
+      const hanledRowData = (tableData: Array<Row>, columnTitle: Array<ColumnTitle>): Array<Row> => {
+        return tableData.map((row) => {
+          return {
+            ...row,
+            columns: getColumns(row, columnTitle),
+          }
+        })
+      }
       const currentPageSource = computed(() => {
         return hanledRowData(props.contentData, state.columnTitle);
       })
@@ -74,10 +97,8 @@ export default defineComponent({
         log('原始数据不存在！')
         return;
       }
-      state.fixedRowData = cloneDeep(newVal);
-
-      // 分页后对数据重新排序
-      emit('sort-current-page');
+      state.fixedRowData = cloneDeep(newVal); // 将分页完的数据复制给fixedRowData
+      emit('sort-current-page'); // 分页后对数据重新排序
     }, { immediate: true })
 
     // 排序方法
@@ -93,7 +114,7 @@ export default defineComponent({
       ...toRefs(state),
       currentPageSource,
       getTdWidth, 
-      sortHandle 
+      sortHandle
     }
   },
 })

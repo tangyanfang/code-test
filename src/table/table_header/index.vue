@@ -26,12 +26,14 @@
 
 import { PropType } from '@vue/runtime-dom';
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import debug from 'debug';
 import type { ColumnTitle } from '../types';
 import { 
   SORT_TYPES, 
   ASC_CLS,
   DES_CLS
 } from '../const';
+const log = debug('table:header');
 
 export default defineComponent({
   name: 'TableHeader',
@@ -60,6 +62,7 @@ export default defineComponent({
     // 抛出排序事件
     const handleSortClick = (item: ColumnTitle): void => {
       if (!item.sortable) {
+        log('当前列不支持排序！')
         return;
       }
       state.sortName = item.columnProp;
@@ -70,16 +73,10 @@ export default defineComponent({
       state.sortType = sortTypes[newIndex];
       emit('sort-handle', state.sortName, state.sortType)
     }
-
-    // 接收分页后排序事件
-    const sortCurrentPage = () => {
-     emit('sort-handle', state.sortName, state.sortType)
-    };
     return { 
       ...toRefs(state),
       handleSortClick,
-      useClasses,
-      sortCurrentPage
+      useClasses
     }
   },
 })

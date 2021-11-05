@@ -4,7 +4,7 @@ import { SORT_TYPES } from './const';
 
 // 排序
 export let compare = (property: string, type: string) => {
-  return function(a: Object ,b: Object){
+  return function(a: any ,b: any){
     const value1 = a[property]
     const value2 = b[property]
     if (type === SORT_TYPES.asc) {
@@ -15,9 +15,9 @@ export let compare = (property: string, type: string) => {
 }
 
 // 表格数据处理
-export let getColumns = (row: any, header: any) => {
+export let getColumns = (row: any, headers: any[]) => {
   const handleColumns: any = []
-  header.forEach((item: any) => {
+  headers.forEach((item: any) => {
     handleColumns.push({
       id: item.columnProp,
       value: row[item.columnProp],
@@ -27,7 +27,7 @@ export let getColumns = (row: any, header: any) => {
   return handleColumns;
 }
 export let hanledRowData = <T>(tableData: Array<T>, columnTitle: any): Array<T> => {
-  return tableData.map((row: any) => {
+  return tableData.map((row) => {
     return {
       ...row,
       columns: getColumns(row, columnTitle),

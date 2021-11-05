@@ -5,27 +5,49 @@ import { TestTable } from '../table'
 import TableHeader from '../table/table_header/index.vue'
 import TableBody  from '../table/table_body/index.vue'
 import TablePager from '../table/pager/index.vue'
-import { headerData, column1DesSortData, column1AscSortData,  sortData} from '../../demo/test_data'
+import { 
+  column1SortData,
+  headerData, 
+  column1DesSortData, 
+  column1AscSortData,  
+  sortData
+} from '../../demo/test_data'
 import { compare } from '../table/utils';
 
 Vue.use(CompositionApi)
 
 describe('Table', () => {
-  const TableMount = options => mount(TestTable, options)
-  const tableHeader = options => mount(TableHeader, options)
+  const tableWrapper = options => mount(TestTable, options)
   const tableBody = options => mount(TableBody, options)
+  const tableHeader = options => mount(TableHeader, options)
   const tablePager = options => mount(TablePager, options)
 
+  // 表格渲染测试
   test('render', () => {
-    const wrapper = TableMount()
-    expect(wrapper.html()).toMatchSnapshot()
+    const table = tableWrapper({
+      propsData: {
+        headerData: headerData,
+        contentData: sortData
+      }
+    })
+    expect(table.html()).toMatchSnapshot()
     expect(() => {
-      wrapper.vm.$forceUpdate()
-      wrapper.vm.$destroy()
+      table.vm.$forceUpdate()
+      table.vm.$destroy()
     }).not.toThrow()
   })
 
-  // 排序测试
+  // 表格数据为空测试
+  test('表格数据为空', () => {
+    const table = tableWrapper({})
+    expect(table.find('.empty').exists()).toBe(true)
+  })
+  test('table-body数据为空', () => {
+    const table = tableBody({})
+    expect(table.find('.empty').exists()).toBe(true)
+  })
+
+  // 排序样式测试
   test('排序测试', async () => {
     const tableHeaderWrapper = tableHeader({
       propsData: {
@@ -49,7 +71,7 @@ describe('Table', () => {
   test('分页测试', async () => {
     const tablePagerWrapper = tablePager({
       propsData: {
-        maxPage: 5
+        total: 100
       }
     });
 
@@ -64,7 +86,7 @@ describe('Table', () => {
 
     // 测试当前页码大于最大页码时，是否跳转到了第一页
     await tablePagerWrapper.setData({ currentPage: 5 })
-    await tablePagerWrapper.setProps({ maxPage: 3 })
+    await tablePagerWrapper.setData({ currentSize: 100 })
     expect(tablePagerWrapper.findAll('li.number').wrappers[0].find('.active').exists()).toBeTruthy()
 
     // 测试currentSize变化时，有发送分页事件
@@ -72,29 +94,49 @@ describe('Table', () => {
     expect(tablePagerWrapper.emitted()['page-handle']).toBeTruthy()
   })
 
-  //
-  test('table-body排序测试', async () => {
-    const table = TableMount({
+  // 测试table-body组件排序
+  test('table-body排序结果测试', async () => {
+    const table = tableWrapper({
       propsData: {
         headerData: headerData,
-        contentData: sortData,
-        pageSize: 20
+        contentData: sortData
       }
     })
 
-    // tableHeader发送排序事件给table，table调用table-body的排序方法
     // 升序
+    // 期待发送排序事件
+    // 期待组件升序后的值等于给定的值
     await table.findAll('.my-table-header th').wrappers[0].trigger('click')
     expect(table.findComponent(TableHeader).emitted()['sort-handle']).toBeTruthy()
-    let ascData = table.findComponent(TableBody).findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
+    let test = table.findComponent(TableBody);
+    let test1 = test.findAll('.my-table-body .column1');
+    let test2 = test1.wrappers;
+    let ascData = table.findComponent(TableBody)
+      .findAll('.my-table-body .column1')
+      .wrappers
+      .map(node => Number(node.element.innerHTML))
     let ascDataBeforeStr = ascData.toString()
-    expect(ascDataBeforeStr).toEqual(column1AscSortData.sort((a, b) => a - b).toString())
+    expect(ascDataBeforeStr).toEqual(column1AscSortData.toString())
 
     // 降序
+    // 期待组件降序后的值等于给定的值
     await table.findAll('.my-table-header th').wrappers[0].trigger('click')
-    let desData = table.findComponent(TableBody).findAll('.my-table-body .column1').wrappers.map(node => Number(node.element.innerHTML))
+    let desData = table.findComponent(TableBody).
+      findAll('.my-table-body .column1').
+      wrappers
+      .map(node => Number(node.element.innerHTML))
     let desDataBeforeStr = desData.toString()
-    expect(desDataBeforeStr).toEqual(column1DesSortData.sort((a, b) => b - a).toString())
+    expect(desDataBeforeStr).toEqual(column1DesSortData.toString())
+
+    // 恢复
+    // 期待组件恢复后的值等于给定的值
+    await table.findAll('.my-table-header th').wrappers[0].trigger('click')
+    let sourceData = table.findComponent(TableBody).
+      findAll('.my-table-body .column1').
+      wrappers
+      .map(node => Number(node.element.innerHTML))
+    let sourceDataBeforeStr = sourceData.toString()
+    expect(sourceDataBeforeStr).toEqual(column1SortData.toString())
   })
 
   // 测试排序方法是否正确

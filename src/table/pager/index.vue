@@ -83,6 +83,7 @@ export default defineComponent({
     // 抛出分页事件
     const changePage = (val: number, currentSize: number) => {
       emit('page-handle', val, currentSize)
+      log('成功抛出分页事件！')
     };
     return { 
       ...toRefs(option), 

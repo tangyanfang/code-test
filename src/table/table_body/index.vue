@@ -11,12 +11,15 @@
             :style="`width: ${getTdWidth(column.scale, columnTitle)}`"
             class="ellipsis">
             <slot name="column" :row-data="item" :column="column.id">
-              <span>{{ column.value }}</span>
+              <span :class="column.id">{{ column.value }}</span>
             </slot>
         </td>
       </div>
     </div>
-    <div v-else>暂无数据</div>
+    <div v-else 
+      class="empty">
+      暂无数据
+    </div>
   </div>
 </template>
 
@@ -25,7 +28,7 @@
  * 表格body
  */
 
-import { toRefs, defineComponent,  reactive, watch } from '@vue/composition-api'
+import { toRefs, defineComponent,  reactive, watch, computed } from '@vue/composition-api'
 import { compare, hanledRowData, getTdWidth } from '../utils';
 import debug from 'debug';
 import { PropType } from '@vue/runtime-dom';
@@ -47,51 +50,50 @@ export default defineComponent({
       default: () => {
         return []
       },
-    },
-    pageSize: {
-      type: Number,
-      default: 20,
     }
   },
 
-  setup(props) {
+  setup(props, { emit }) {
     const state = reactive({
       columnTitle: props.headerData,
-      fixedRowData: [] as Array<Record<string, any>>, // 渲染到页面上的数据
-      resourceData: [] as Array<Record<string, any>>, // 数据处理后的数据备份
-      currentPageSource: [] as Array<Record<string, any>> // 当前页原始数据
+      fixedRowData: [] as Array<any>, // 渲染到页面上的数据
     });
 
-    // 监听父组件的tabledata
-    watch(() => props.contentData, newVal => {
-      state.fixedRowData =hanledRowData(newVal, state.columnTitle);
-      state.resourceData = cloneDeep(state.fixedRowData);
-      pageHandle(1, props.pageSize);
-    })
+    // 获取表格当前页原始数据
+    const useConvertProps = (props: any) => {
+      const currentPageSource = computed(() => {
+        return hanledRowData(props.contentData, state.columnTitle);
+      })
+      return { currentPageSource };
+    }
+    const { currentPageSource } = useConvertProps(props);
+
+    // 监听currentPageSource
+    watch(() => currentPageSource.value, newVal => {
+      if (!newVal.length) {
+        log('原始数据不存在！')
+        return;
+      }
+      state.fixedRowData = cloneDeep(newVal);
+
+      // 分页后对数据重新排序
+      emit('sort-current-page');
+    }, { immediate: true })
 
     // 排序方法
     const sortHandle = (columnId: string, type: string) => {
       if (type !== 'reset') {
         state.fixedRowData = state.fixedRowData.sort(compare(columnId, type))
-        log(`排序列：${columnId}，类型：${type}`);
+        log(`排序列：${columnId}，排序类型：${type}`);
         return;
       }
-      state.fixedRowData = cloneDeep(state.currentPageSource);
+      state.fixedRowData = cloneDeep(currentPageSource.value);
     }
-
-    // 分页方法
-    const pageHandle = (currentPage: number, currentSize: number) => {
-      state.fixedRowData = state.resourceData.slice((currentPage - 1) * currentSize, currentPage * currentSize)
-      log(`分页页码：${currentPage}，每页数量：${currentSize}`);
-
-      // 切换页码后，保存原始数据
-      state.currentPageSource = cloneDeep(state.fixedRowData);
-    };
     return {  
       ...toRefs(state),
+      currentPageSource,
       getTdWidth, 
-      sortHandle, 
-      pageHandle 
+      sortHandle 
     }
   },
 })

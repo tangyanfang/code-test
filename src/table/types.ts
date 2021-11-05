@@ -46,8 +46,8 @@ export interface Column {
 
 export interface Row {
   rowId: string,
-  columns: Array<Column>
 };
+
 
 
 // interface A {

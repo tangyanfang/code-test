@@ -2,11 +2,12 @@
   <table class="my-table">
     <table-header ref="tableHeaderComponent"
                   :header-data="header"
-                  @sort-handle="sortHandleEmit"
+                  @sort-handle="sortHandle"
     />
     <table-body ref="tableBodyComponent"
                 :header-data="header"
-                :content-data="content.list">
+                :content-data="list"
+                @sort-current-page="sortCurrentPage">
         <template v-slot:column="{column, rowData}" >
           <slot name="column" :row-data="rowData" :column="column"></slot>
         </template>
@@ -20,7 +21,7 @@
  * Created by uedc on 2021/10/11.
  */
 
-import { defineComponent, reactive, ref, watch } from '@vue/composition-api'
+import { computed, defineComponent, ref } from '@vue/composition-api'
 import TableHeader from './table_header/index.vue'
 import TableBody from './table_body/index.vue'
 import TablePager from './pager/index.vue'
@@ -56,33 +57,37 @@ export default defineComponent({
   },
   setup(props) {
     const header = props.headerData
-    const content = reactive({
-      list: [] as Array<Record<string, any>>,
-    })
     const tableBodyComponent = ref<any>()
     const tableHeaderComponent = ref<any>()
 
-    // 监听父组件的tabledata
-    watch(() => props.contentData, newVal => {
-      content.list = newVal
-    })
+    // 获取表格数据
+    const useConvertProps = (props: any) => {
+      const list = computed(() => {
+        return props.contentData;
+      })
+      return { list };
+    }
+    const { list } = useConvertProps(props);
 
-    // 向body组件发送排序事件
-    const sortHandleEmit = (columnId: string, type: string) => {
-      tableBodyComponent.value.sortHandle(columnId, type)
+    // 调用body组件排序方法
+    const sortHandle = (columnId: string, type: string) => {
+      tableBodyComponent.value.sortHandle(columnId, type);
     }
 
-    // 向body组件发送分页事件
-    const pageHandleEmit = (currentPage: number, currentSize: number) => {
-      tableBodyComponent.value.pageHandle(currentPage, currentSize)
-      log(`当前页码：${currentPage}，每页数据条数：${currentSize}`);
-      tableHeaderComponent.value.sortCurrentPage();
-    }
+    // 调用body组件分页后排序方法
+    const sortCurrentPage = () => {
+      const headerComponentValue = tableHeaderComponent.value;
+      if (!headerComponentValue || !headerComponentValue.sortName || !headerComponentValue.sortType) {
+        log('不存在需要排序的列！');
+        return;
+      }
+      sortHandle(headerComponentValue.sortName, headerComponentValue.sortType);
+    };
     return {
       header,
-      content,
-      sortHandleEmit,
-      pageHandleEmit,
+      list,
+      sortHandle,
+      sortCurrentPage,
       tableBodyComponent,
       tableHeaderComponent,
     }

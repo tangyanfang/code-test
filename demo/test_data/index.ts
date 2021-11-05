@@ -65,9 +65,7 @@ export const sortData = [
     column5: '05',
     column4: '06',
   }]
-
-// 第一列表数据降序
+// 第一列表数据排序
+export const column1SortData = [3, 1, 2];
 export const column1DesSortData = [3, 2, 1];
-
-// 第一列表数据升序
 export const column1AscSortData = [1, 2, 3];

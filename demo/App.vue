@@ -21,6 +21,8 @@
     </test-table>
     <table-pager
       :total="state.list.length"
+      :page-sizes="state.pageSizes"
+      :page-size="state.pageSize"
       @page-handle="pageHandle"
     />
   </div>
@@ -41,10 +43,11 @@ export default defineComponent({
   setup() {
     const tableComponent = ref<any>()
 
-    //表格内容
+    //表格相关数据
     const state = reactive({
       list: [] as Array<any>,
       headers: headerData,
+      pageSizes: [20, 50, 100],
       currentPage: 1,
       pageSize: 20
     })

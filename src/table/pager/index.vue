@@ -3,7 +3,7 @@
     <span>选择每页展示的数据条数：</span>
     <select v-model="currentSize"
             class="size-select">
-      <option v-for="item in pageSizes"
+      <option v-for="item in sizeList"
               :key="item"
               :value ="item">{{item}}</option>
     </select>
@@ -27,6 +27,7 @@
  */
 
 import { defineComponent, reactive, toRefs, watch, computed } from '@vue/composition-api'
+import { PropType } from '@vue/runtime-dom';
 import debug from 'debug';
 const log = debug('table:pager');
 
@@ -37,14 +38,22 @@ export default defineComponent({
       type: Number,
       default: 0,
     },
+    pageSizes: {
+      type: Array as PropType<Array<number>>,
+      default:  [20, 50, 100],
+    },
+    pageSize: {
+      type: Number,
+      default:  20,
+    }
   },
   emits: ['page-handle'],
   setup(props, {emit}) {
 
     // 基本数据
     const option = reactive({
-      pageSizes: [20, 50, 100],
-      currentSize: 20,
+      sizeList: props.pageSizes,
+      currentSize: props.pageSize,
       currentPage: 1
     });
     const useConvertProps = (props: any) => {

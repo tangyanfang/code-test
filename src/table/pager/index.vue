@@ -40,7 +40,7 @@ export default defineComponent({
     },
     pageSizes: {
       type: Array as PropType<Array<number>>,
-      default:  [20, 50, 100],
+      default:  () => ([20, 50, 100]),
     },
     pageSize: {
       type: Number,
